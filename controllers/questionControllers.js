@@ -6,19 +6,20 @@ const Option = require("../models/OptionsModel");
 
 //To create a question
 module.exports.createQuestion = async function (req, res) {
-  let isError = false;
-  // creating a new question
-  await Questions.create(req.body).catch((err) => {
-    isError = true;
+  try {
+    // creating the questions
+    for (let title of req.body.title) {
+      await Questions.create({ title });
+    }
+    // returning the resoponse
+    return res.status(200).json({
+      message: "question created succesfully",
+    });
+  } catch (err) {
     // checking for the error
     return res.status(465).json({
-      message: "error in creating a question",
-    });
-  });
-  // returning the response
-  if (!isError) {
-    return res.status(200).json({
-      message: "created succesfully",
+      message: "error in creating a questions",
+      error: err.message,
     });
   }
 };
@@ -30,10 +31,16 @@ module.exports.deleteQuestion = async function (req, res) {
     const question = await Questions.findById(req.params.id);
     // deleting all the options related to that question
     for (let id of question.options) {
-      await Option.findByIdAndDelete(id);
+      let option = await Option.findByIdAndDelete(id);
+      // checking whether option contains any votes or not
+      if (option.votes > 0) {
+        return res.status(401).json({
+          message: "you cannot delete that option",
+        });
+      }
     }
     // deleting the question
-    question.remove();
+    await question.remove();
     // sending response
     return res.status(200).json({
       message: "question deleted succesfully",

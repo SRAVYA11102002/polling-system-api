@@ -16,7 +16,11 @@ module.exports.addOption = async function (req, res) {
       });
       // creating dynamic link
       currOption.link_to_vote =
-        "http://" + req.headers.host + "/options/" + option.id + "/add_vote";
+        "http://" +
+        req.headers.host +
+        "/options/" +
+        currOption.id +
+        "/add_vote";
       currOption.save();
       // pushing options id into question
       question.options.push(currOption.id);
@@ -38,13 +42,21 @@ module.exports.addOption = async function (req, res) {
 //To delete an option
 module.exports.deleteOption = async function (req, res) {
   try {
+    // finding the particular option
+    const option = await Option.findById(req.params.id);
+    // checking whether it contains any vote or not
+    if (option.votes > 0) {
+      return res.status(401).json({
+        message: "You cannot delete that vote",
+      });
+    }
     // finding the question and updating it
     await Questions.updateOne(
       { options: { $in: req.params.id } },
       { $pull: { options: { $eq: req.params.id } } }
     );
     // deleting the particular option
-    await Option.findByIdAndDelete(req.params.id);
+    await option.remove();
     // returning the response
     return res.status(200).json({
       message: "option deleted succesfully",

@@ -1,12 +1,6 @@
 // requiring express
 const express = require("express");
 
-// importing Questions model
-const Questions = require("../models/questionModel");
-
-// importing Option Model
-const Option = require("../models/OptionsModel");
-
 // importing questionsControllers
 const questionController = require("../controllers/questionControllers");
 
