@@ -31,13 +31,15 @@ module.exports.deleteQuestion = async function (req, res) {
     const question = await Questions.findById(req.params.id);
     // deleting all the options related to that question
     for (let id of question.options) {
-      let option = await Option.findByIdAndDelete(id);
+      let option = await Option.findById(id);
       // checking whether option contains any votes or not
       if (option.votes > 0) {
         return res.status(401).json({
           message: "you cannot delete that option",
         });
       }
+      // delete that particular option
+      await option.remove();
     }
     // deleting the question
     await question.remove();
