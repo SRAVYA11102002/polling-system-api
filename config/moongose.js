@@ -2,7 +2,9 @@
 const mongoose = require("mongoose");
 
 // connecting to the database
-mongoose.connect("mongodb://localhost/question_api");
+mongoose.connect(
+  "mongodb+srv://Nitish:nitish33@cluster0.ksobj.mongodb.net/Ecommerce?retryWrites=true&w=majority"
+);
 
 //acquire the connection to check if it is succesfull
 const db = mongoose.connection;
