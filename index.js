@@ -9,7 +9,7 @@ const app = express();
 
 // importing bodyParser
 const bodyParser = require("body-parser");
-const port = 8000;
+const port = process.env.PORT || 8000;
 
 // using bodyParser
 app.use(
